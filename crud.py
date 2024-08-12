@@ -7,8 +7,8 @@ from models import Product, ProductProfile, MemberPurchaseProfile, ProductSellSt
 def get_product(db: Session, product_id: int):
     return db.query(Product).filter(Product.id == product_id).first()
 
-def get_product_profiles(db: Session):
-    return list(map(lambda x: x[1], db.execute(select(Product, ProductProfile).filter(Product.id == ProductProfile.product_id).where(Product.sell_status == ProductSellStatus.ONGOING)).all()))
+def get_product_with_profile(db: Session):
+    return db.execute(select(Product, ProductProfile).filter(Product.id == ProductProfile.product_id).where(Product.sell_status == ProductSellStatus.ONGOING)).all()
 
 def get_product_profile(db: Session, product_id: int):
     return db.query(ProductProfile).filter(ProductProfile.product_id == product_id).first()
@@ -62,14 +62,14 @@ def update_product_profile(db: Session, product_id:int, category: int, title: st
 def get_recommended_products(db: Session, member_id: int, limit: int):
     member_purchase_profile = get_member_purchase_profile(db, member_id)
     member_profile = text_to_ndarray(member_purchase_profile.product_cumulative_sum) / member_purchase_profile.purchase_count
+    
+    cosine_similarity_values = list(map(lambda x: (cos_sim(member_profile, text_to_ndarray(x[1].profile)).item(), x[0]), get_product_with_profile(db)))
+    cosine_similarity_values.sort(key=lambda x: x[0], reverse=True)
 
-    cosine_similarity_values = list(map(lambda x: (cos_sim(member_profile, text_to_ndarray(x.profile)), x.id), get_product_profiles(db)))
-    cosine_similarity_values.sort(reverse=True)
-
-    return {"product_ids": [value[1] for value in cosine_similarity_values[:limit]]}
+    return {"products": [value[1] for value in cosine_similarity_values[:limit]]}
 
 def initialize_product_profile(db: Session):
-    product_profiles = get_product_profiles(db)
+    product_profiles = list(map(lambda x: x[1], get_product_with_profile(db)))
     tokenizer = Tokenizer()
     for product_profile in product_profiles:
         product = get_product(db, product_profile.product_id)
