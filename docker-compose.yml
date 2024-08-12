@@ -1,0 +1,17 @@
+services:
+  fresh-trash-recsys:
+    container_name: fresh-trash-recsys
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    cpus: 1
+    mem_limit: 1g
+    image: fresh-trash-recsys:0.0.1
+    ports:
+      - "9080:9080"
+    networks:
+      - docker_app
+
+networks:
+  docker_app:
+    driver: bridge
