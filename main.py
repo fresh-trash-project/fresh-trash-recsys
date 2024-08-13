@@ -45,7 +45,7 @@ def handle_purchase(product_id: int, member_id: int, db: Session = Depends(get_d
 """
 상품 추천
 """
-@app.get("/products/{member_id}/")
+@app.get("/rec-sys/products/{member_id}/")
 def recommended_products(member_id: int, limit: int, db: Session = Depends(get_db)):
     return crud.get_recommended_products(db, member_id, limit)
 
