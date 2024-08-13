@@ -1,11 +1,9 @@
-import yaml
-
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-with open('properties.yml') as f:
-    PROPERTIES = yaml.load(f, Loader=yaml.FullLoader)
+from config import PROPERTIES
+
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{PROPERTIES['USER']}:{PROPERTIES['PASSWORD']}@{PROPERTIES['HOST']}:{PROPERTIES['PORT']}/{PROPERTIES['DATABASE']}"
 

@@ -46,21 +46,12 @@ class Member(Base, BaseModel):
     user_role = Column(Enum(UserRole), nullable=False)
     account_status = Column(Enum(AccountStatus), nullable=False)
 
+    product_vector_file_name = Column(String, nullable=False)
+    auction_vector_file_name = Column(String, nullable=False)
+    product_purchase_count = Column(Integer, nullable=False)
+    auction_purchase_count = Column(Integer, nullable=False)
+
     products: Mapped[List["Product"]] = relationship(back_populates="member")
-    member_puchase_profile: Mapped["MemberPurchaseProfile"] = relationship(uselist=False, back_populates="member")
-
-
-class MemberPurchaseProfile(Base, BaseModel):
-    __tablename__ = "member_purchase_profiles"
-
-    id = Column(Integer, primary_key=True)  
-
-    product_cumulative_sum = Column(BLOB, nullable=True)
-    purchase_count = Column(Integer, nullable=False, default=0)
-
-    member_id: Mapped[int] = mapped_column(ForeignKey("members.id"), unique=True, nullable=False)
-    member: Mapped["Member"] = relationship("Member", back_populates="member_puchase_profile")
-
 
 """
 Product
@@ -107,17 +98,8 @@ class Product(Base, BaseModel):
     sell_status = Column(Enum(ProductSellStatus), nullable=False)
 
     address = Column(JSON, nullable=False)
+    profile_file_name = Column(String, nullable=False)
     product_deal_at = Column(DateTime(timezone=True), nullable=True)
 
     member_id: Mapped[int] = mapped_column(ForeignKey("members.id"))
     member: Mapped["Member"] = relationship(back_populates="products")
-    product_profile: Mapped["ProductProfile"] = relationship(uselist=False, back_populates="product")
-
-class ProductProfile(Base, BaseModel):
-    __tablename__ = "product_profiles"
-
-    id = Column(Integer, primary_key=True)
-    profile = Column(BLOB, nullable=True)
-
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), unique=True, nullable=False)
-    product: Mapped["Product"] = relationship(back_populates="product_profile")

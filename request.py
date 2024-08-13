@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ProductProfileRequest(BaseModel):
-    product_id: int
+    file_name: str
     category: int
     title: str
     content: str

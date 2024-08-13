@@ -1,25 +1,29 @@
-import pickle
 import numpy as np
+import os.path as osp
 
 from numpy import dot
 from numpy.linalg import norm
 from transformers import AutoTokenizer
 
 from models import ProductCategory
+from config import PROPERTIES
+
+
+LOCAL_FILE_PATH = PROPERTIES['LOCAL_FILE_PATH']
 
 
 """코사인 유사도"""
 def cos_sim(A, B):
   return dot(A, B)/(norm(A)*norm(B))
 
-"""Numpy Array -> Text"""
-def ndarray_to_text(arr):
-  return pickle.dumps(arr)
+def save_numpy(path, arr):
+  with open(osp.join(LOCAL_FILE_PATH, path), 'wb') as f:
+    np.save(f, arr)
 
-"""Text -> Numpy Array"""
-def text_to_ndarray(text):
-  return pickle.loads(text)
-
+def load_numpy(path):
+  with open(osp.join(LOCAL_FILE_PATH, path), 'rb') as f:
+    arr = np.load(f, allow_pickle=True)
+  return arr
 
 class SingletonInstane:
   __instance = None
@@ -52,3 +56,12 @@ class Tokenizer(SingletonInstane):
   
   def __encode(self, content):
     return Tokenizer._tokenizer.encode(content, return_tensors='np')
+
+class FileUtils:
+
+  def __init__(self):
+    return
+  
+  @staticmethod
+  def existsFile(path):
+      return osp.isfile(osp.join(LOCAL_FILE_PATH, path))

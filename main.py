@@ -17,21 +17,9 @@ def get_db():
     finally:
         db.close()
 
-
-@app.post("/product-profile/")
-def create_product_profile(request: ProductProfileRequest, db: Session = Depends(get_db)):
-    crud.create_product_profile(db, product_id=request.product_id, category=request.category, title=request.title, content=request.content)
-
 @app.put("/product-profile/")
-def update_product_profile(request: ProductProfileRequest, db: Session = Depends(get_db)):
-    crud.update_product_profile(db, product_id=request.product_id, category=request.category, title=request.title, content=request.content)
-
-"""
-테스트 데이터의 프로필 데이터 추가를 위해 사용
-"""
-@app.put("/initial-product-profile/")
-def initialize_product_profile(db: Session = Depends(get_db)):
-    crud.initialize_product_profile(db)
+def update_product_profile(request: ProductProfileRequest):
+    crud.update_product_profile(file_name=request.file_name, category=request.category, title=request.title, content=request.content)
 
 """
 1. 구매 횟수 + 1
@@ -39,7 +27,7 @@ def initialize_product_profile(db: Session = Depends(get_db)):
 """
 @app.put("/purchase/{product_id}/{member_id}/")
 def handle_purchase(product_id: int, member_id: int, db: Session = Depends(get_db)):
-    crud.update_member_for_puchase(db, member_id, product_id)
+    crud.create_or_update_member_for_product_puchase(db, member_id, product_id)
     return None
 
 """
@@ -48,6 +36,14 @@ def handle_purchase(product_id: int, member_id: int, db: Session = Depends(get_d
 @app.get("/rec-sys/products/{member_id}/")
 def recommended_products(member_id: int, limit: int, db: Session = Depends(get_db)):
     return crud.get_recommended_products(db, member_id, limit)
+
+"""
+테스트 데이터의 프로필 데이터 추가를 위해 사용
+"""
+@app.put("/initial-profile/")
+def initialize_product_profile(db: Session = Depends(get_db)):
+    crud.initialize_product_profile(db)
+    crud.initialize_member_profile(db)
 
 
 if __name__ == '__main__':
