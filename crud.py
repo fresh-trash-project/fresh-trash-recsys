@@ -26,6 +26,9 @@ def get_members(db: Session):
 def get_auction(db: Session, auction_id: int):
     return db.query(Auction).filter(Auction.id == auction_id).first()
 
+def get_auctions(db: Session):
+    return db.query(Auction).all()
+
 def get_ongoing_auctions(db: Session):
     return db.query(Auction).where(Auction.auction_status == AuctionStatus.ONGOING).all()
 
@@ -124,7 +127,7 @@ def get_recommended_auctions(db: Session, member_id: int, limit: int):
 
 def initialize_product_and_auction_profile(db: Session):
     products = get_ongoing_products(db)
-    auctions = get_ongoing_auctions(db)
+    auctions = get_auctions(db)
     tokenizer = Tokenizer()
     for product in products:
         product_vector = tokenizer.get_vector(f"{product.title} {product.content}", product.product_category.value)
