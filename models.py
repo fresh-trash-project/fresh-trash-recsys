@@ -1,6 +1,6 @@
 import enum
 from typing import List
-from sqlalchemy import Column, ForeignKey, Integer, String, Enum, JSON, DateTime, DOUBLE, BLOB, func
+from sqlalchemy import Column, ForeignKey, Integer, String, Enum, JSON, DateTime, DOUBLE, func
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from database import Base
@@ -52,6 +52,7 @@ class Member(Base, BaseModel):
     auction_purchase_count = Column(Integer, nullable=False)
 
     products: Mapped[List["Product"]] = relationship(back_populates="member")
+    auctions: Mapped[List["Auction"]] = relationship(back_populates="member")
 
 """
 Product
@@ -103,3 +104,33 @@ class Product(Base, BaseModel):
 
     member_id: Mapped[int] = mapped_column(ForeignKey("members.id"))
     member: Mapped["Member"] = relationship(back_populates="products")
+
+class AuctionStatus(enum.Enum):
+    ONGOING = "ONGOING"
+    BOOKING = "BOOKING"
+    CLOSE = "CLOSE"
+
+class Auction(Base):
+    __tablename__ = "auctions"
+
+    id = Column(Integer, primary_key=True)
+
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    view_count = Column(Integer, nullable=False)
+    file_name = Column(String, nullable=False)
+    final_bid = Column(Integer, nullable=False)
+
+    product_category = Column(Enum(ProductCategory), nullable=False)
+    product_status = Column(Enum(ProductStatus), nullable=False)
+    auction_status = Column(Enum(AuctionStatus), nullable=False)
+    profile_file_name = Column(String, nullable=False)
+
+    started_at = Column(DateTime(timezone=True), nullable=False)
+    ended_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=func.now(), nullable=True)
+
+    version = Column(Integer, nullable=False, default=0)
+
+    member_id: Mapped[int] = mapped_column(ForeignKey("members.id"))
+    member: Mapped["Member"] = relationship(back_populates="auctions")

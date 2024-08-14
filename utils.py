@@ -45,11 +45,11 @@ class Tokenizer(SingletonInstane):
   def __init__(self):
     return
   
-  def get_product_vector(self, content, category_idx):
-    product_vector = self.get_empty_vector()
+  def get_vector(self, content, category_idx):
+    vector = self.get_empty_vector()
     indices = np.append(self.__encode(content).squeeze(axis=0), np.array([category_idx]), axis=0)
-    product_vector[indices] += 1
-    return product_vector
+    vector[indices] += 1
+    return vector
   
   def get_empty_vector(self):
     return np.append([0] * Tokenizer._tokenizer.vocab_size, np.array([0] * ProductCategory.__len__()), axis=0)
