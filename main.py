@@ -1,4 +1,5 @@
 import uvicorn
+from version import __version__
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
@@ -8,7 +9,10 @@ from request import ProductProfileRequest
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    title="fresh-trash-recsys",
+    version=__version__,
+)
 
 def get_db():
     db = SessionLocal()
