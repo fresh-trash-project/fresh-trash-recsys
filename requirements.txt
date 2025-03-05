@@ -3,5 +3,5 @@ pydantic==2.8.2
 uvicorn==0.22.0
 sqlalchemy==2.0.32
 PyMySQL==1.1.1
-transformers==4.44.0
+transformers==4.48.0
 numpy==2.0.1
